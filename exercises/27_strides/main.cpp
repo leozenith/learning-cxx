@@ -6,7 +6,7 @@
 // 张量的步长或跨度指的是张量每个维度上坐标 +1 时，数据指针跨过的范围。
 // 因此，一个连续张量，其第 n 维的步长为 1，第 n-1 维的步长为 dn，第 n-2 维的步长为 dn*dn-1，以此类推。
 // 例如，一个 2x3x4 张量，其步长为 [12, 4, 1]。
-
+#include <iostream>
 // READ: 类型别名 <https://zh.cppreference.com/w/cpp/language/type_alias>
 using udim = unsigned int;
 
@@ -18,11 +18,19 @@ std::vector<udim> strides(std::vector<udim> const &shape) {
     // TODO: 完成函数体，根据张量形状计算张量连续存储时的步长。
     // READ: 逆向迭代器 std::vector::rbegin <https://zh.cppreference.com/w/cpp/container/vector/rbegin>
     //       使用逆向迭代器可能可以简化代码
+    udim curr_stride = 1;
+    auto it_shape = shape.rbegin();
+    auto it_stride = strides.rbegin();
+    for(; it_shape != shape.rend(); it_shape++, it_stride++){
+        *it_stride = curr_stride;
+        curr_stride *= *it_shape;
+    }
     return strides;
 }
 
 // ---- 不要修改以下代码 ----
 int main(int argc, char **argv) {
+
     ASSERT((strides({2, 3, 4}) == std::vector<udim>{12, 4, 1}), "Make this assertion pass.");
     ASSERT((strides({3, 4, 5}) == std::vector<udim>{20, 5, 1}), "Make this assertion pass.");
     ASSERT((strides({1, 3, 224, 224}) == std::vector<udim>{150528, 50176, 224, 1}), "Make this assertion pass.");

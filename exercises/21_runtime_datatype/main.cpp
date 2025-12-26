@@ -18,12 +18,20 @@ struct TaggedUnion {
 };
 
 // TODO: 将这个函数模板化用于 sigmoid_dyn
-float sigmoid(float x) {
+template<typename T>
+T sigmoid(T x) {
     return 1 / (1 + std::exp(-x));
 }
 
 TaggedUnion sigmoid_dyn(TaggedUnion x) {
     TaggedUnion ans{x.type};
+    if(x.type == DataType::Float) {
+        ans.f = sigmoid(x.f);
+    } else if(x.type == DataType::Double) {
+        ans.d = sigmoid(x.d);
+    } else {
+        ASSERT(false, "Unsupported data type");
+    }
     // TODO: 根据 type 调用 sigmoid
     return ans;
 }
@@ -35,7 +43,6 @@ int main(int argc, char **argv) {
     auto yf = sigmoid_dyn(xf);
     ASSERT(yf.type == DataType::Float, "type mismatch");
     ASSERT(yf.f == 1 / (1 + std::exp(-5.f)), "sigmoid float");
-
     TaggedUnion xd{DataType::Double};
     xd.d = 5.0;
     auto yd = sigmoid_dyn(xd);
